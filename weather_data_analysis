@@ -1,0 +1,76 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+
+def Weather_survey(date=None, state=None, city=None):
+    # Load the dataset
+    df = pd.read_csv(r'Weather.csv')
+    
+    # Filter the dataset based on state and city
+    df_filtered = df[(df['Station.State'] == state) & (df['Station.City'] == city)]
+    
+    if date:
+        # Convert the input date list to a string in the format 'm/d/yyyy'
+        date_str = f'{date[1]}/{date[0]}/{date[2]}'
+        
+        # Filter the dataset based on the date
+        df_date = df_filtered[df_filtered['Date.Full'] == date_str]
+        
+        if not df_date.empty:
+            # Extract the relevant data
+            temp_avg = df_date['Temp.avg'].values[0]
+            temp_min = df_date['Temp.min'].values[0]
+            temp_max = df_date['Temp.max'].values[0]
+            wind_speed = df_date['Wind.speed'].values[0]
+            
+            # Print the data
+            print(f"Weather data for {city}, {state} on {date_str}:")
+            print(f"Average Temperature: {temp_avg}°F")
+            print(f"Minimum Temperature: {temp_min}°F")
+            print(f"Maximum Temperature: {temp_max}°F")
+            print(f"Wind Speed: {wind_speed} mph")
+        else:
+            print(f"No data available for {city}, {state} on {date_str}.")
+    else:
+        # Plot the data for the whole year
+        plt.figure(figsize=(14, 10))
+
+        # Plot average temperature
+        plt.subplot(4, 1, 1)
+        plt.plot(df_filtered['Date.Full'], df_filtered['Temp.avg'], label='Avg Temp', color='blue')
+        plt.ylabel('Avg Temp (°F)')
+        plt.xticks(rotation=45)
+        plt.legend()
+
+        # Plot minimum temperature
+        plt.subplot(4, 1, 2)
+        plt.plot(df_filtered['Date.Full'], df_filtered['Temp.min'], label='Min Temp', color='green')
+        plt.ylabel('Min Temp (°F)')
+        plt.xticks(rotation=45)
+        plt.legend()
+
+        # Plot maximum temperature
+        plt.subplot(4, 1, 3)
+        plt.plot(df_filtered['Date.Full'], df_filtered['Temp.max'], label='Max Temp', color='red')
+        plt.ylabel('Max Temp (°F)')
+        plt.xticks(rotation=45)
+        plt.legend()
+
+        # Plot wind speed
+        plt.subplot(4, 1, 4)
+        plt.plot(df_filtered['Date.Full'], df_filtered['Wind.speed'], label='Wind Speed', color='purple')
+        plt.ylabel('Wind Speed (mph)')
+        plt.xlabel('Date')
+        plt.xticks(rotation=45)
+        plt.legend()
+
+        plt.tight_layout()
+        plt.show()
+
+# Example usage:
+date = [3, 1, 2016]
+state = 'Alabama'
+city = 'Huntsville'
+Weather_survey(date, state, city)
+
+# If date is not provided
+Weather_survey(state=state, city=city)
